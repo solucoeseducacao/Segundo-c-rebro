@@ -1010,43 +1010,68 @@ window._instalarApp=async function(){
 })();
 
 const OWNER_EMAIL='felipevigneron@gmail.com';
-// Planos que têm acesso completo ao app (leitor também entra, mas com limites)
-function hasAppAccess(p){return['leitor','mestre','mestre_offline','doutor','pesquisador_pro','ilimitado'].includes(p);}
+// Planos pagos que dão acesso ao app (leitor NÃO entra — vai para paywall obrigatório)
+function hasAppAccess(p){return['mestre','mestre_offline','doutor','pesquisador_pro','ilimitado'].includes(p);}
 
-// Timeout de segurança: se o loader não sumir em 10s, força a tela de login
-const _loaderTimeout=setTimeout(()=>{
-  if(document.getElementById('authLoader')?.style.display!=='none'){
-    hideLoader();showLogin();
-  }
-},10000);
 function hideLoader(){
-  clearTimeout(_loaderTimeout);
-  const l=document.getElementById('authLoader');if(l)l.style.display='none';
+  const l=document.getElementById('authLoader');
+  if(l) l.style.display='none';
 }
 
+// Timeout de segurança absoluto: 8s → tela de login (nunca fica preso)
+setTimeout(()=>{
+  const l=document.getElementById('authLoader');
+  if(l && l.style.display!=='none'){ hideLoader(); showLogin(); }
+},8000);
+
 onAuthStateChanged(auth,async u=>{
-  if(u){
+  try{
+    if(!u){CU=null;UD=null;showLogin();return;}
+
     CU=u;
-    // fnInit com timeout de 4s — no Spark plan a Cloud Function não existe e trava
-    await Promise.race([fnInit().catch(()=>{}),new Promise(r=>setTimeout(r,4000))]);
-    await loadUD().catch(()=>{});
+
+    // Dono do app: acesso total imediato
     if(u.email===OWNER_EMAIL){
+      hideLoader();
       showApp();
       await Promise.all([loadCols(),loadQuotes(),loadIdeias().catch(()=>{})]);
       renderSidebar();renderGrid();
-    } else if(hasAppAccess(UD?.plano)){
-      const planoValido=await verificarPlanoValido().catch(()=>true);
-      if(planoValido){
-        showApp();
-        await Promise.all([loadCols(),loadQuotes(),loadIdeias().catch(()=>{})]);
-        renderSidebar();renderGrid();
-      } else {
-        showPaywall();
-      }
-    } else {
-      showPaywall();
+      return;
     }
-  } else {CU=null;UD=null;showLogin();}
+
+    // Carregar dados do usuário (Firestore) com timeout de 5s
+    await Promise.race([
+      loadUD().catch(()=>{}),
+      new Promise(r=>setTimeout(r,5000))
+    ]);
+
+    // REGRA DE SEGURANÇA: planos que dão acesso ao app (leitor não entra)
+    const PLANOS_PAGOS=['mestre','mestre_offline','doutor','pesquisador_pro','ilimitado'];
+    const plano=UD?.plano||null;
+
+    if(!PLANOS_PAGOS.includes(plano)){
+      // Sem plano pago → paywall OBRIGATÓRIO
+      showPaywall();
+      return;
+    }
+
+    // Tem plano pago → verificar se não expirou
+    const planoValido=await verificarPlanoValido().catch(()=>true);
+    if(!planoValido){
+      showPaywall();
+      return;
+    }
+
+    // Acesso liberado
+    showApp();
+    await Promise.all([loadCols(),loadQuotes(),loadIdeias().catch(()=>{})]);
+    renderSidebar();renderGrid();
+
+  }catch(err){
+    console.error('Erro no onAuthStateChanged:',err);
+    hideLoader();
+    showLogin();
+  }
 });
 
 // --- Login: navegação entre telas ---
