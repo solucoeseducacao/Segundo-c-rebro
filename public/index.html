@@ -20,7 +20,7 @@
 <meta property="og:description" content="Organize, cite e exporte referências em ABNT com IA. Usado por +1.200 pesquisadores brasileiros.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://segundo-cerebro-bfb66.web.app">
-<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+<!-- docx carregado dinamicamente só na exportação — não bloqueia o carregamento inicial -->
 <style>
 :root{--bg:#f7f5f0;--surface:#ffffff;--surface2:#f0ede6;--border:#e0dbd0;--border2:#c8c2b4;--text:#1a1814;--text2:#6b6560;--text3:#9e9890;--accent:#3d2b1f}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -393,8 +393,8 @@ main{padding:8px}
         <div class="pw-plan-header" style="margin-top:8px">
           <div class="pw-plan-name">Pesquisador Pro</div>
           <div class="pw-plan-price">
-            <div class="main gold">R$ 79,90<span style="font-size:.7rem;font-weight:400">/mês</span> <span class="pw-saving">ECONOMIZE R$10</span></div>
-            <div class="sub">ou R$ 89,90 no PIX avulso (1 ano)</div>
+            <div class="main gold">R$ 89,90<span style="font-size:.7rem;font-weight:400"> / compra anual</span> <span class="pw-saving">ECONOMIZE R$10</span></div>
+            <div class="sub">ou R$ 99,90 / compra mensal</div>
           </div>
         </div>
         <div class="pw-plan-features">
@@ -406,8 +406,8 @@ main{padding:8px}
           <span>Suporte prioritário por e-mail</span>
         </div>
         <div class="pw-plan-btns">
-          <button class="pw-btn-pix gold" onclick="iniciarPagamentoPix('pesquisador_pro',89.90)">💳 PIX<br>R$ 89,90 / 1 ano</button>
-          <button class="pw-btn-rec gold" onclick="iniciarAssinatura('pesquisador_pro')">🔄 Assinar<br>R$ 79,90/mês</button>
+          <button class="pw-btn-pix gold" onclick="iniciarPagamentoPix('pesquisador_pro',89.90)">💳 Compra Anual<br>R$ 89,90 / ano</button>
+          <button class="pw-btn-rec gold" onclick="iniciarAssinatura('pesquisador_pro')">🔄 Compra Mensal<br>R$ 99,90/mês</button>
         </div>
       </div>
 
@@ -416,8 +416,8 @@ main{padding:8px}
         <div class="pw-plan-header">
           <div class="pw-plan-name">Plano Doutor</div>
           <div class="pw-plan-price">
-            <div class="main">R$ 39,90<span style="font-size:.7rem;font-weight:400">/mês</span></div>
-            <div class="sub">ou R$ 49,90 no PIX avulso (1 ano)</div>
+            <div class="main">R$ 49,90<span style="font-size:.7rem;font-weight:400"> / compra anual</span></div>
+            <div class="sub">ou R$ 59,90 / compra mensal</div>
           </div>
         </div>
         <div class="pw-plan-features">
@@ -429,8 +429,8 @@ main{padding:8px}
           <span class="no">Suporte prioritário (só Pro)</span>
         </div>
         <div class="pw-plan-btns">
-          <button class="pw-btn-pix" onclick="iniciarPagamentoPix('doutor',49.90)">💳 PIX<br>R$ 49,90 / 1 ano</button>
-          <button class="pw-btn-rec" onclick="iniciarAssinatura('doutor')">🔄 Assinar<br>R$ 39,90/mês</button>
+          <button class="pw-btn-pix" onclick="iniciarPagamentoPix('doutor',49.90)">💳 Compra Anual<br>R$ 49,90 / ano</button>
+          <button class="pw-btn-rec" onclick="iniciarAssinatura('doutor')">🔄 Compra Mensal<br>R$ 59,90/mês</button>
         </div>
       </div>
 
@@ -439,8 +439,8 @@ main{padding:8px}
         <div class="pw-plan-header">
           <div class="pw-plan-name">Plano Mestre</div>
           <div class="pw-plan-price">
-            <div class="main">R$ 19,90<span style="font-size:.7rem;font-weight:400">/mês</span></div>
-            <div class="sub">ou R$ 29,90 no PIX avulso (1 ano)</div>
+            <div class="main">R$ 29,90<span style="font-size:.7rem;font-weight:400"> / compra anual</span></div>
+            <div class="sub">ou R$ 39,90 / compra mensal</div>
           </div>
         </div>
         <div class="pw-plan-features">
@@ -451,8 +451,8 @@ main{padding:8px}
           <span class="no">Adaptar normas (só Pro)</span>
         </div>
         <div class="pw-plan-btns">
-          <button class="pw-btn-pix" onclick="iniciarPagamentoPix('mestre',29.90)">💳 PIX<br>R$ 29,90 / 1 ano</button>
-          <button class="pw-btn-rec" onclick="iniciarAssinatura('mestre')">🔄 Assinar<br>R$ 19,90/mês</button>
+          <button class="pw-btn-pix" onclick="iniciarPagamentoPix('mestre',29.90)">💳 Compra Anual<br>R$ 29,90 / ano</button>
+          <button class="pw-btn-rec" onclick="iniciarAssinatura('mestre')">🔄 Compra Mensal<br>R$ 39,90/mês</button>
         </div>
       </div>
 
@@ -595,9 +595,9 @@ main{padding:8px}
         <tr style="background:var(--accent);color:#fff">
           <th style="padding:10px 8px;text-align:left;border-radius:8px 0 0 0">Recurso</th>
           <th style="padding:10px 8px">Leitor<br><span style="font-weight:400;font-size:.75rem">Grátis</span></th>
-          <th style="padding:10px 8px">Mestre<br><span style="font-weight:400;font-size:.75rem">R$19,90/mês</span></th>
-          <th style="padding:10px 8px">Doutor<br><span style="font-weight:400;font-size:.75rem">R$39,90/mês</span></th>
-          <th style="padding:10px 8px;border-radius:0 8px 0 0">Pro<br><span style="font-weight:400;font-size:.75rem">R$79,90/mês</span></th>
+          <th style="padding:10px 8px">Mestre<br><span style="font-weight:400;font-size:.75rem">R$29,90/ano</span></th>
+          <th style="padding:10px 8px">Doutor<br><span style="font-weight:400;font-size:.75rem">R$49,90/ano</span></th>
+          <th style="padding:10px 8px;border-radius:0 8px 0 0">Pro<br><span style="font-weight:400;font-size:.75rem">R$89,90/ano</span></th>
         </tr>
       </thead>
       <tbody>
