@@ -206,6 +206,6 @@ app.get('/mp/pubkey', async(_,res)=>{
   }
 });
 
-app.get('/health', (_,res)=>res.json({ok:true, mp: !!MP_ACCESS_TOKEN, ai: !!ANTHROPIC_API_KEY}));
+app.get('/health', (_,res)=>res.json({ok:true, mp: !!MP_ACCESS_TOKEN, ai: !!ANTHROPIC_API_KEY, v:'2.0'}));
 
 app.listen(process.env.PORT||3000, ()=>console.log('Proxy Segundo Cerebro rodando'));
